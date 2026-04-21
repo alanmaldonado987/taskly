@@ -53,11 +53,11 @@ const STATUS_LABELS = {
 };
 
 const PRIORITY_LABELS = {
-  highest: "Highest",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-  lowest: "Lowest",
+  highest: "Más alta",
+  high: "Alta",
+  medium: "Media",
+  low: "Baja",
+  lowest: "Más baja",
 };
 
 const PRIORITY_COLORS = {
@@ -165,15 +165,15 @@ export function TaskModal() {
         <div className="flex-1 overflow-y-auto py-4">
           <Tabs defaultValue="details" className="w-full">
             <TabsList className="mb-4">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="comments">Comments</TabsTrigger>
-              <TabsTrigger value="attachments">Attachments</TabsTrigger>
-              <TabsTrigger value="activity">Activity</TabsTrigger>
+              <TabsTrigger value="details">Detalles</TabsTrigger>
+              <TabsTrigger value="comments">Comentarios</TabsTrigger>
+              <TabsTrigger value="attachments">Archivos</TabsTrigger>
+              <TabsTrigger value="activity">Actividad</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="space-y-6">
               <div className="space-y-2">
-                <Label>Task name</Label>
+                <Label>Nombre de tarea</Label>
                 <Input
                   value={editedTask.name || ""}
                   onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })}
@@ -181,25 +181,25 @@ export function TaskModal() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label>Descripcion</Label>
                 <Textarea
                   value={editedTask.description || ""}
                   onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
-                  placeholder="Add a description..."
+                  placeholder="Agregar una descripcion..."
                   rows={3}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Start date</Label>
+                  <Label>Fecha de inicio</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start">
                         <CalendarIcon className="w-4 h-4 mr-2" />
                         {editedTask.startDate
                           ? format(editedTask.startDate, "MMM d, yyyy")
-                          : "Select date"}
+                          : "Seleccionar fecha"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -214,14 +214,14 @@ export function TaskModal() {
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <Label>End date</Label>
+                  <Label>Fecha de fin</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start">
                         <CalendarIcon className="w-4 h-4 mr-2" />
                         {editedTask.endDate
                           ? format(editedTask.endDate, "MMM d, yyyy")
-                          : "Select date"}
+                          : "Seleccionar fecha"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -239,7 +239,7 @@ export function TaskModal() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label>Estado</Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" className="w-full justify-between">
@@ -280,7 +280,7 @@ export function TaskModal() {
                   </DropdownMenu>
                 </div>
                 <div className="space-y-2">
-                  <Label>Priority</Label>
+                  <Label>Prioridad</Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" className="w-full justify-between">
@@ -315,7 +315,7 @@ export function TaskModal() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label>Progress</Label>
+                  <Label>Progreso</Label>
                   <span className="text-sm text-muted-foreground">
                     {editedTask.progress || 0}%
                   </span>
@@ -330,7 +330,7 @@ export function TaskModal() {
               </div>
 
               <div className="space-y-2">
-                <Label>Assignees</Label>
+                <Label>Asignados</Label>
                 <div className="flex flex-wrap gap-2">
                   {(editedTask.assignees || []).map((assigneeId) => {
                     const member = getMemberById(assigneeId);
@@ -375,7 +375,7 @@ export function TaskModal() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm" className="gap-1">
                         <Users className="w-4 h-4" />
-                        Add
+                        Agregar
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -412,7 +412,7 @@ export function TaskModal() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Estimated hours</Label>
+                  <Label>Horas estimadas</Label>
                   <div className="relative">
                     <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -430,7 +430,7 @@ export function TaskModal() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Logged hours</Label>
+                  <Label>Horas registradas</Label>
                   <div className="relative">
                     <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -450,7 +450,7 @@ export function TaskModal() {
               </div>
 
               <div className="space-y-2">
-                <Label>Task color</Label>
+                <Label>Color de tarea</Label>
                 <div className="flex gap-2">
                   {TASK_COLORS.map((color) => (
                     <button
@@ -474,30 +474,30 @@ export function TaskModal() {
                     JD
                   </AvatarFallback>
                 </Avatar>
-                <Input placeholder="Add a comment..." className="flex-1" />
-                <Button size="sm">Send</Button>
+                <Input placeholder="Agregar un comentario..." className="flex-1" />
+                <Button size="sm">Enviar</Button>
               </div>
               <div className="text-center py-8 text-muted-foreground">
                 <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No comments yet</p>
+                <p>Sin comentarios</p>
               </div>
             </TabsContent>
 
             <TabsContent value="attachments" className="space-y-4">
               <Button variant="outline" className="w-full gap-2">
                 <Paperclip className="w-4 h-4" />
-                Add attachment
+                Agregar archivo
               </Button>
               <div className="text-center py-8 text-muted-foreground">
                 <Paperclip className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No attachments yet</p>
+                <p>Sin archivos</p>
               </div>
             </TabsContent>
 
             <TabsContent value="activity" className="space-y-4">
               <div className="text-center py-8 text-muted-foreground">
                 <Clock className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No activity yet</p>
+                <p>Sin actividad</p>
               </div>
             </TabsContent>
           </Tabs>
@@ -505,9 +505,9 @@ export function TaskModal() {
 
         <div className="flex-shrink-0 pt-4 border-t border-border flex justify-end gap-2">
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            Cancelar
           </Button>
-          <Button onClick={handleSave}>Save changes</Button>
+          <Button onClick={handleSave}>Guardar cambios</Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -37,7 +37,7 @@ export function Header() {
   } = useProjectStore();
 
   const zoomOptions = [
-    { value: "day", label: "Dia" },
+    { value: "day", label: "Día" },
     { value: "week", label: "Semana" },
     { value: "month", label: "Mes" },
   ];

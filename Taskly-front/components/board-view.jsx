@@ -67,11 +67,11 @@ const PRIORITY_COLORS = {
 };
 
 const PRIORITY_LABELS = {
-  highest: "Highest",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-  lowest: "Lowest",
+  highest: "Más alta",
+  high: "Alta",
+  medium: "Media",
+  low: "Baja",
+  lowest: "Más baja",
 };
 
 function TaskCard({ task, onClick }) {

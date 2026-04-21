@@ -26,7 +26,7 @@ import {
   ArrowUpRight,
   Diamond,
 } from "lucide-react";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,12 +40,114 @@ const DAY_WIDTH = 40;
 const WEEK_DAY_WIDTH = 20;
 const MONTH_DAY_WIDTH = 8;
 const ROW_HEIGHT = 44;
+const TASK_COL_MIN_WIDTH = 200;
+const TASK_COL_DEFAULT_WIDTH = 320;
 
 export function GanttChart() {
   const { project, zoomLevel, selectedTaskId, setSelectedTask, setTaskModalOpen, updateTask } =
     useProjectStore();
   const [expandedGroups, setExpandedGroups] = useState([]);
+  const [taskColWidth, setTaskColWidth] = useState(TASK_COL_DEFAULT_WIDTH);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const [spacePressed, setSpacePressed] = useState(false);
   const chartRef = useRef(null);
+  const resizerRef = useRef(null);
+  const scrollStartRef = useRef({ x: 0, scrollLeft: 0 });
+
+  // Handle column resizing
+  const resizerStartRef = useRef({ x: 0, width: 0 });
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    resizerStartRef.current = { x: e.clientX, width: taskColWidth };
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      const delta = e.clientX - resizerStartRef.current.x;
+      const newWidth = Math.max(TASK_COL_MIN_WIDTH, resizerStartRef.current.width + delta);
+      setTaskColWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing]);
+
+  // Handle space key for panning
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === "Space" && !e.repeat) {
+        e.preventDefault();
+        setSpacePressed(true);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.code === "Space") {
+        setSpacePressed(false);
+        setIsPanning(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  // Handle panning with space + drag
+  const handlePanStart = (e) => {
+    if (!spacePressed) return;
+    setIsPanning(true);
+    scrollStartRef.current = { x: e.clientX, scrollLeft: chartRef.current?.scrollLeft || 0 };
+  };
+
+  useEffect(() => {
+    const handlePanMove = (e) => {
+      if (!isPanning || !chartRef.current) return;
+      const delta = scrollStartRef.current.x - e.clientX;
+      chartRef.current.scrollLeft = scrollStartRef.current.scrollLeft + delta;
+    };
+
+    const handlePanEnd = () => {
+      setIsPanning(false);
+    };
+
+    if (isPanning) {
+      document.addEventListener("mousemove", handlePanMove);
+      document.addEventListener("mouseup", handlePanEnd);
+      document.body.style.cursor = "grabbing";
+      document.body.style.userSelect = "none";
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handlePanMove);
+      document.removeEventListener("mouseup", handlePanEnd);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isPanning]);
 
   const dayWidth = useMemo(() => {
     switch (zoomLevel) {
@@ -110,37 +212,40 @@ export function GanttChart() {
     <TooltipProvider>
       <div className="flex-1 flex flex-col overflow-hidden bg-card">
         <div className="flex items-center gap-1 px-4 py-2 border-b border-border bg-muted/30">
-          <Button variant="secondary" size="sm" className="h-7 text-xs font-medium">
-            Timeline
+          <Button variant="secondary" size="sm" className="h-7 text-xs font-medium cursor-pointer">
+            Cronograma
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-            Board
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground cursor-pointer">
+            Tablero
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-            List
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground cursor-pointer">
+            Lista
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-            Workload
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground cursor-pointer">
+            Carga de trabajo
           </Button>
 
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-              Expand/Collapse
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground cursor-pointer">
+              Expandir/Contraer
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-              Bulk change
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground cursor-pointer">
+              Cambio masivo
             </Button>
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
-              Filter
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 cursor-pointer">
+              Filtrar
             </Button>
           </div>
         </div>
 
         <div className="flex-1 flex overflow-hidden">
-          <div className="w-80 flex-shrink-0 border-r border-border flex flex-col">
+          <div
+            className="flex-shrink-0 border-r border-border flex flex-col"
+            style={{ width: taskColWidth }}
+          >
             <div className="h-16 border-b border-border bg-muted/30 flex items-end">
               <div className="flex items-center h-10 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Task name
+                Nombre de tarea
               </div>
             </div>
 
@@ -157,7 +262,7 @@ export function GanttChart() {
                     setTaskModalOpen(true);
                   }}
                 >
-                  <Button variant="ghost" size="icon" className="w-6 h-6 opacity-0 group-hover:opacity-100">
+                  <Button variant="ghost" size="icon" className="w-6 h-6 opacity-0 group-hover:opacity-100 cursor-pointer">
                     <GripVertical className="w-4 h-4 text-muted-foreground" />
                   </Button>
 
@@ -213,16 +318,16 @@ export function GanttChart() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="w-6 h-6 opacity-0 group-hover:opacity-100"
+                        className="w-6 h-6 opacity-0 group-hover:opacity-100 cursor-pointer"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit task</DropdownMenuItem>
-                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                      <DropdownMenuItem>Editar tarea</DropdownMenuItem>
+                      <DropdownMenuItem>Duplicar</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -230,7 +335,25 @@ export function GanttChart() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto" ref={chartRef}>
+          {/* Resizer */}
+          <div
+            ref={resizerRef}
+            onMouseDown={handleMouseDown}
+            className={`
+              w-1 cursor-col-resize bg-border hover:bg-primary transition-colors flex-shrink-0
+              ${isResizing ? "bg-primary" : ""}
+            `}
+          />
+
+          <div
+            className={cn(
+              "flex-1 overflow-auto",
+              spacePressed && "cursor-grab",
+              isPanning && "cursor-grabbing"
+            )}
+            ref={chartRef}
+            onMouseDown={handlePanStart}
+          >
             <div style={{ width: days.length * dayWidth, minHeight: "100%" }}>
               <div className="h-16 border-b border-border bg-muted/30 sticky top-0 z-10">
                 <div className="h-8 flex border-b border-border">

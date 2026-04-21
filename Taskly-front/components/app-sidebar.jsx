@@ -112,7 +112,7 @@ export function AppSidebar() {
           </div>
           <div>
             <h1 className="font-semibold text-sidebar-foreground text-lg tracking-tight">
-              GANTTPRO
+              Taskly
             </h1>
           </div>
         </div>

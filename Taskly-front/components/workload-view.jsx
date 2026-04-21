@@ -138,13 +138,13 @@ export function WorkloadView() {
             </div>
             <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
               <Filter className="w-3 h-3" />
-              Filter
+              Filtrar
             </Button>
           </div>
         </div>
 
         <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-xs">
-          <span className="text-muted-foreground">Workload:</span>
+          <span className="text-muted-foreground">Carga de trabajo:</span>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 bg-green-200 rounded" />
             <span className="text-muted-foreground">{"< 50%"}</span>
@@ -282,13 +282,13 @@ export function WorkloadView() {
                                 {member.name} - {format(day, "MMM d")}
                               </p>
                               <p className="text-xs">
-                                Workload: {dayData.hours.toFixed(1)}h /{" "}
+                                Carga de trabajo: {dayData.hours.toFixed(1)}h /{" "}
                                 {HOURS_PER_DAY}h ({((dayData.hours / HOURS_PER_DAY) * 100).toFixed(0)}
                                 %)
                               </p>
                               {dayData.tasks.length > 0 && (
                                 <div className="border-t border-border pt-1 mt-1">
-                                  <p className="text-xs text-muted-foreground mb-1">Tasks:</p>
+                                  <p className="text-xs text-muted-foreground mb-1">Tareas:</p>
                                   {dayData.tasks.map((task) => (
                                     <p
                                       key={task.id}
