@@ -89,7 +89,7 @@ export function AppSidebar() {
               variant="ghost"
               size="icon"
               className={cn(
-                "w-full mb-1",
+                "w-full mb-1 cursor-pointer",
                 item.view === currentView && "bg-sidebar-accent text-sidebar-accent-foreground"
               )}
               onClick={() => item.view && setCurrentView(item.view)}
@@ -139,20 +139,20 @@ export function AppSidebar() {
             open={expandedSections.includes(section.title)}
             onOpenChange={() => toggleSection(section.title)}
           >
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-2 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-sidebar-accent/50">
+            <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-2 text-xs font-semibold text-primary uppercase tracking-wider hover:bg-sidebar-accent/50 cursor-pointer">
               <span>{section.title}</span>
               {expandedSections.includes(section.title) ? (
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform duration-700 ease-out" />
               ) : (
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-700 ease-out" />
               )}
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent className="animate-in slide-in-from-top-4 duration-500">
               {section.items.map((item) => (
                 <button
                   key={item.id}
                   className={cn(
-                    "flex items-center gap-3 w-full px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors",
+                    "flex items-center gap-3 w-full px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
                     item.view === currentView &&
                       "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                   )}
@@ -182,7 +182,7 @@ export function AppSidebar() {
 
       {/* Settings */}
       <div className="p-2 border-t border-sidebar-border">
-        <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors">
+        <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors cursor-pointer">
           <Settings className="w-4 h-4" />
           <span>Configuracion</span>
         </button>
