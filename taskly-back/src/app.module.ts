@@ -3,11 +3,19 @@ import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
+import { MembersModule } from './members/members.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
+    ProjectsModule,
+    TasksModule,
+    MembersModule,
+    CommentsModule,
   ],
   providers: [
     {

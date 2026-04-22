@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
+import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { verifyAccessToken } from '../utils/helpers';
 
@@ -47,5 +48,31 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logoutAll(@Request() req: any) {
     return this.authService.logoutAllSessions(req.user.id);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.forgotPassword(dto.email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.confirmResetPassword(dto.code, dto.newPassword);
+    return { message: 'Password updated successfully' };
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resendVerification(@Body() dto: { email: string }) {
+    await this.authService.resendVerificationCode(dto.email);
+  }
+
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Body() dto: { code: string }) {
+    await this.authService.confirmVerification(dto.code);
+    return { message: 'Email verified successfully' };
   }
 }

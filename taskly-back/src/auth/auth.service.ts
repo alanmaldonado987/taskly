@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import type { User, Session } from '../types';
+import { EmailService } from '../email/email.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -17,7 +17,10 @@ import { VERIFICATION_CODE_EXPIRY_MINUTES } from '../utils/constants';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService
+  ) {}
 
   async register(dto: CreateUserDto, ip?: string): Promise<AuthResponseDto> {
     const existingUser = await this.prisma.user.findUnique({
@@ -195,9 +198,16 @@ export class AuthService {
         expiresAt,
       },
     });
+
+    const html = this.emailService.getVerificationEmailTemplate(user.name, code);
+    await this.emailService.send({
+      to: user.email,
+      subject: 'Verifica tu correo electrónico',
+      html,
+    });
   }
 
-  async resetPassword(email: string): Promise<void> {
+  async forgotPassword(email: string): Promise<void> {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -215,6 +225,81 @@ export class AuthService {
         type: 'PASSWORD_RESET',
         expiresAt,
       },
+    });
+
+    const html = this.emailService.getForgotPasswordTemplate(user.name, code);
+    await this.emailService.send({
+      to: user.email,
+      subject: 'Recuperar contraseña - Taskly',
+      html,
+    });
+  }
+
+  async confirmResetPassword(code: string, newPassword: string): Promise<void> {
+    const verification = await this.prisma.verificationCode.findFirst({
+      where: {
+        code,
+        type: 'PASSWORD_RESET',
+        isUsed: false,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!verification) {
+      throw new BadRequestException('Código inválido o expirado');
+    }
+
+    await this.prisma.user.update({
+      where: { id: verification.userId },
+      data: { passwordHash: hashPassword(newPassword) },
+    });
+
+    await this.prisma.verificationCode.update({
+      where: { id: verification.id },
+      data: { isUsed: true, usedAt: new Date() },
+    });
+
+    await this.prisma.session.updateMany({
+      where: { userId: verification.userId, isRevoked: false },
+      data: { isRevoked: true },
+    });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: verification.userId },
+    });
+
+    if (user) {
+      const html = this.emailService.getPasswordChangedTemplate(user.name);
+      await this.emailService.send({
+        to: user.email,
+        subject: 'Tu contraseña ha sido actualizada',
+        html,
+      });
+    }
+  }
+
+  async confirmVerification(code: string): Promise<void> {
+    const verification = await this.prisma.verificationCode.findFirst({
+      where: {
+        code,
+        type: 'EMAIL_VERIFY',
+        isUsed: false,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!verification) {
+      throw new BadRequestException('Código inválido o expirado');
+    }
+
+    await this.prisma.user.update({
+      where: { id: verification.userId },
+      data: { isEmailVerified: true },
+    });
+
+    await this.prisma.verificationCode.update({
+      where: { id: verification.id },
+      data: { isUsed: true, usedAt: new Date() },
     });
   }
 }

@@ -11,3 +11,10 @@ export const SALT_ROUNDS = 10;
 export const VERIFICATION_CODE_EXPIRY_MINUTES = 15;
 
 export const SESSION_EXPIRY_DAYS = 7;
+
+export const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+
+export const SMTP_HOST = process.env.SMTP_HOST;
+export const SMTP_PORT = process.env.SMTP_PORT || '587';
+export const SMTP_USER = process.env.SMTP_USER;
+export const SMTP_PASS = process.env.SMTP_PASS;
