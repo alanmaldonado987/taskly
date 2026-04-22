@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verifica tu correo</title>
+</head>
+
+<body
+    style="margin: 0; padding: 0; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0"
+                    style="background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                    <!-- Header -->
+                    <tr>
+                        <td
+                            style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Taskly</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 32px;">
+                            <h2 style="margin: 0 0 16px; color: #0f172a; font-size: 24px; font-weight: 600;">Verifica tu
+                                correo electrónico</h2>
+                            <p style="margin: 0 0 24px; color: #475569; font-size: 16px; line-height: 1.6;">
+                                Hola <strong>{{name}}</strong>,<br><br>
+                                Gracias por registrarte en Taskly. Para completar tu registro, verifica tu correo
+                                electrónico con el siguiente código:
+                            </p>
+
+                            <!-- Code Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0"
+                                style="background: #f1f5f9; border-radius: 8px; padding: 20px; margin: 24px 0;">
+                                <tr>
+                                    <td align="center"
+                                        style="font-family: 'Geist Mono', monospace; font-size: 32px; font-weight: 700; color: #0f172a; letter-spacing: 8px;">
+                                        {{code}}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0; color: #64748b; font-size: 14px;">
+                                Este código vence en <strong>30 minutos</strong>.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center;">
+                                © {{currentYear}} Taskly. Todos los derechos reservados.<br>
+                                <a href="{{appUrl}}" style="color: #3b82f6; text-decoration: none;">{{appUrl}}</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
