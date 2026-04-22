@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ActivitiesService {
@@ -34,21 +35,21 @@ export class ActivitiesService {
     performedById: string,
     type: string,
     description: string,
-    previous?: Record<string, any>,
-    current?: Record<string, any>
-  ): Promise<void> {
-    await this.prisma.activity.create({
-      data: {
-        projectId,
-        taskId,
-        performedById,
-        type: type as any,
-        description,
-        previous,
-        current,
-      },
-    });
-  }
+    previous?: Record<string, any> | null,
+    current?: Record<string, any> | null
+): Promise<void> {
+  await this.prisma.activity.create({
+    data: {
+      projectId,
+      taskId,
+      performedById,
+      type: type as any,
+      description,
+      previous: previous ?? Prisma.JsonNull,
+      current: current ?? Prisma.JsonNull,
+    },
+  });
+}
 
   async logTaskCreated(projectId: string, taskId: string, performedById: string, taskName: string): Promise<void> {
     await this.log(projectId, taskId, performedById, 'TASK_CREATED', `Tarea "${taskName}" creada`, null, { name: taskName });
